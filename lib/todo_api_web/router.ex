@@ -22,6 +22,8 @@ defmodule TodoApiWeb.Router do
 
     post "/list", ListController, :create
 
+    post "/list/task", TaskController, :create
+
     get "/user", UserController, :index
     post "/user/register", UserController, :register
 
