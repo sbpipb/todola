@@ -1,14 +1,18 @@
 defmodule TodoApi.Accounts.User do
   use Ecto.Schema
-  import Ecto.Changeset
-
+  # use TodoApi.Schema
   alias TodoApi.Accounts.User
+
+  import Ecto.Changeset
 
   schema "users" do
     field :username, :string
     field :password, :string
 
     timestamps()
+
+    has_many :tasks, TodoApi.Lists.Task
+    has_many :lists, TodoApi.Lists.List
   end
 
   @spec changeset(

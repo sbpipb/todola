@@ -7,7 +7,6 @@ defmodule TodoApi.Lists.Task do
     field :title, :string
     field :user_id, :id
     field :list_id, :id
-
     timestamps()
   end
 
