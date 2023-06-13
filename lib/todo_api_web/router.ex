@@ -1,4 +1,6 @@
 defmodule TodoApiWeb.Router do
+  # alias TodoApiWeb.UserController
+  # alias TodoApiWeb.UserController
   use TodoApiWeb, :router
 
   pipeline :browser do
@@ -18,7 +20,11 @@ defmodule TodoApiWeb.Router do
   scope "/api", TodoApiWeb do
     pipe_through :api
 
+    post "/list", ListController, :create
+
+    get "/user", UserController, :index
     post "/user/register", UserController, :register
+
     post "/session", SessionController, :create
     get "/session", SessionController, :create
   end
