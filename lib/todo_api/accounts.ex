@@ -8,6 +8,7 @@ defmodule TodoApi.Accounts do
 
   alias TodoApi.Accounts.User
 
+  @spec list_users :: any
   @doc """
   Returns the list of users.
 
@@ -100,5 +101,15 @@ defmodule TodoApi.Accounts do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  def authenticate({username, password} = params) do
+    # TODO: password should be encryted!
+    case Repo.get_by(User, [username: username, password: password]) do
+      nil ->
+        {:error, :unauthenticated}
+      user ->
+        {:ok, user}
+    end
   end
 end
