@@ -1,6 +1,6 @@
 defmodule TodoApiWeb.Router do
-  # alias TodoApiWeb.UserController
-  # alias TodoApiWeb.UserController
+  import TodoApiWeb.Authentication
+
   use TodoApiWeb, :router
 
   pipeline :browser do
@@ -16,19 +16,27 @@ defmodule TodoApiWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :authenticated do
+    plug :ensure_authenticated
+  end
+
   # Other scopes may use custom stacks.
   scope "/api", TodoApiWeb do
     pipe_through :api
 
-    post "/list", ListController, :create
-
-    post "/list/task", TaskController, :create
-
-    get "/user", UserController, :index
     post "/user/register", UserController, :register
 
     post "/session", SessionController, :create
-    get "/session", SessionController, :create
+    delete "/session", SessionController, :destroy
+  end
+
+  scope "/api", TodoApiWeb do
+    pipe_through([:authenticate_header, :authenticated])
+
+    post "/list", ListController, :create
+    post "/list/task", TaskController, :create
+    # resources "/task", TaskController, only: [:update]
+    get "/user", UserController, :index
   end
 
   # Enables LiveDashboard only for development
