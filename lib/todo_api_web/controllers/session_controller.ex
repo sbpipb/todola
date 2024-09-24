@@ -1,7 +1,7 @@
 defmodule TodoApiWeb.SessionController do
   use TodoApiWeb, :controller
 
-  alias TodoApi.Repo
+  # alias TodoApi.Repo
 
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"user" => %{ "username"=>username, "password" => password}}) do

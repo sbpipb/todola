@@ -10,7 +10,7 @@ defmodule TodoApiWeb.TaskController do
         {:ok, task } ->
           json(conn, %{ message: "Task created", title: task.title, id: task.id})
 
-        {:error, changeset } ->
+        {:error, _changeset } ->
           # TODO: handle better error messaging by parsing changeset errors
           conn
           |> put_status(:bad_request)

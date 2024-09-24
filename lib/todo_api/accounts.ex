@@ -103,7 +103,7 @@ defmodule TodoApi.Accounts do
     User.changeset(user, attrs)
   end
 
-  def authenticate({username, password} = params) do
+  def authenticate({username, password} = _params) do
     # TODO: password should be encryted!
     case Repo.get_by(User, [username: username, password: password]) do
       nil ->
