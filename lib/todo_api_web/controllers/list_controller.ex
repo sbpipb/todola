@@ -8,13 +8,12 @@ defmodule TodoApiWeb.ListController do
         conn |> json(%{ message: "List created", title: list.title, id: list.id, description: list.description})
 
       {:error, changeset } ->
-        raise changeset.errors
-        conn |> json(%{ message: "sablay talaga", changeset: changeset})
+        error_list = changeset.errors 
+                      |> Enum.map(fn {attr, { msg, _constraints} = v} -> 
+                        "#{attr} #{msg}"
+                      end)
 
-      _ ->
-        raise "else lang"
-        conn |> json(%{ message: "failed to register "})
-
+        conn |> json(%{ message: "failed to create", errors: error_list})
     end
   end
 end
