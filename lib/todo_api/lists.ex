@@ -19,7 +19,6 @@ defmodule TodoApi.Lists do
 
   def get_list_tasks(list_id) do 
     Repo.all(from t in Task, select: %{title: t.title, completed: t.completed, id: t.id}, where: t.list_id == ^list_id)
-    # Repo.all(from t in Task, where: t.list_id == ^list_id)
   end
 
   def create_list_changeset(todo_list, attrs) do
@@ -36,7 +35,6 @@ defmodule TodoApi.Lists do
   end
 
   def update_task(attrs) do
-    raise 'dito sa 3'
     Task
     |> Repo.get(attrs)
   end
@@ -45,5 +43,12 @@ defmodule TodoApi.Lists do
     task
     |> cast(attrs, [:title, :list_id, :user_id])
     |> validate_required([:title, :list_id, :user_id])
+  end
+
+  def delete_task(task_id) do
+    case Repo.get(Task, task_id) do 
+      nil  -> {:missing, task_id }
+      task -> Repo.delete task
+    end
   end
 end
