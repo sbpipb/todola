@@ -8,8 +8,7 @@ defmodule TodoApi.Lists do
   alias TodoApi.Repo
 
   # alias TodoApi.Accounts.User
-  alias TodoApi.Lists.{List,Task}
-  # alias TodoApi.Lists
+  alias TodoApi.Lists.{List, Task}
 
   def create_list(attrs \\ %{}) do
     %List{}
@@ -17,8 +16,9 @@ defmodule TodoApi.Lists do
     |> Repo.insert()
   end
 
-  def get_list_tasks(list_id) do 
-    Repo.all(from t in Task, select: %{title: t.title, completed: t.completed, id: t.id}, where: t.list_id == ^list_id)
+  def get_list_tasks(list_id) do
+    Repo.all(from t in Task, where: t.list_id == ^list_id)
+    |> serialize_tasks
   end
 
   def create_list_changeset(todo_list, attrs) do
@@ -46,9 +46,14 @@ defmodule TodoApi.Lists do
   end
 
   def delete_task(task_id) do
-    case Repo.get(Task, task_id) do 
-      nil  -> {:missing, task_id }
+    case Repo.get(Task, task_id) do
+      nil  -> {:error, task_id}
       task -> Repo.delete task
     end
+  end
+
+  defp serialize_tasks(tasks) do
+    tasks
+    |> Enum.map(fn t -> %{id: t.id, title: t.title, completed: t.completed} end)
   end
 end
