@@ -47,14 +47,14 @@ defmodule TodoApiWeb.TaskController do
     case Lists.delete_task(task_id) do
       {:ok, task } ->
         json(conn, "successfully deleted task")
-      {:error, _e } ->
+      {:error, _changeset } ->
         conn
         |> put_status(:bad_request)
         |> json(%{ message: "failed to delete task #{task_id}"})
-      _ ->
+      {:missing, task_id} ->
         conn
         |> put_status(:bad_request)
-        |> json(%{ message: "cant find task #{task_id}"})
+        |> json(%{ message: "can't find task #{task_id}"})
     end
   end
 end
