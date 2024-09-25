@@ -33,9 +33,26 @@ defmodule TodoApiWeb.Router do
   scope "/api", TodoApiWeb do
     pipe_through([:authenticate_header, :authenticated])
 
-    post "/list", ListController, :create
+    # post "/list", ListController, :create
+    # get "/list", ListController, :show
+
+    resources "/lists", ListController do
+      resources "/tasks", TaskController, only: [:index, :create, :show, :update]
+    end
+
+    # The user should be able to add a task to the TODO list
     post "/list/task", TaskController, :create
-    # resources "/task", TaskController, only: [:update]
+
+
+    # The user should be able to list all tasks in the TODO list
+    resources "/task", TaskController, only: [:update]
+
+
+    # post "/list/task", TaskController, :create
+
+
+    # The user should be able to update the details of a task in the TODO list
+    # The user should be able to remove a task from the TODO list
     get "/user", UserController, :index
   end
 
