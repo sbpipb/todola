@@ -6,8 +6,6 @@ defmodule TodoApi.Lists do
   import Ecto.Changeset
   import Ecto.Query, warn: false
   alias TodoApi.Repo
-
-  # alias TodoApi.Accounts.User
   alias TodoApi.Lists.{List, Task}
 
   def create_list(attrs \\ %{}) do
@@ -49,9 +47,11 @@ defmodule TodoApi.Lists do
     changeset
     |> put_change(:move_count, task.move_count - 1)
     |> validate_number(:move_count, greater_than: 0)
+    |> validate_number(:order_number, greater_than_or_equal_to: task.order_number - 1, less_than_or_equal_to: task.order_number + 1)
     |> Repo.update
   end
 
+  @spec delete_task(any()) :: any()
   def delete_task(task_id) do
     case Repo.get(Task, task_id) do
       nil  -> {:error, task_id}
