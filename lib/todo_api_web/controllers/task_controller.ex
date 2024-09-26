@@ -28,12 +28,12 @@ defmodule TodoApiWeb.TaskController do
     end
   end
 
-  # TODO: add new attribute Task.order
   def update(conn, %{"task" => task_params}) do
     %{"id" => task_id } = conn.params
+
     case Lists.update_task(task_id, task_params) do
       {:ok, task } ->
-        json(conn, %{message: "Task updated", title: task.title, id: task.id, order_number: task.order_number})
+        json(conn, %{message: "Task updated", title: task.title, id: task.id, order_number: task.order_number, move_count: task.move_count})
 
       {:error, _changeset } ->
         conn
