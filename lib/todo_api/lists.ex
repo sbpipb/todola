@@ -17,7 +17,7 @@ defmodule TodoApi.Lists do
   end
 
   def get_list_tasks(list_id) do
-    Repo.all(from t in Task, where: t.list_id == ^list_id)
+    Repo.all(from t in Task, where: t.list_id == ^list_id, order_by: t.order_number)
     |> serialize_tasks
   end
 
@@ -34,9 +34,16 @@ defmodule TodoApi.Lists do
     |> Repo.insert()
   end
 
-  def update_task(attrs) do
+  def update_task(task_id, task_params) do
+    task_id
+    |> find_task
+    |> Task.changeset(task_params)
+    |> Repo.update
+  end
+
+  defp find_task(task_id) do
     Task
-    |> Repo.get(attrs)
+    |> Repo.get!(task_id)
   end
 
   def create_task_changeset(task, attrs) do
@@ -54,6 +61,9 @@ defmodule TodoApi.Lists do
 
   defp serialize_tasks(tasks) do
     tasks
-    |> Enum.map(fn t -> %{id: t.id, title: t.title, completed: t.completed} end)
+    |> Enum.map(fn t -> %{id: t.id,
+                          title: t.title,
+                          completed: t.completed,
+                          order_number: t.order_number} end)
   end
 end

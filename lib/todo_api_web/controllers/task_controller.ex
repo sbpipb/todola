@@ -28,15 +28,17 @@ defmodule TodoApiWeb.TaskController do
     end
   end
 
+  # TODO: add new attribute Task.order
   def update(conn, %{"task" => task_params}) do
-    case Lists.update_task(task_params) do
+    %{"id" => task_id } = conn.params
+    case Lists.update_task(task_id, task_params) do
       {:ok, task } ->
-        json(conn, %{message: "Task created", title: task.title, id: task.id})
+        json(conn, %{message: "Task updated", title: task.title, id: task.id, order_number: task.order_number})
 
       {:error, _changeset } ->
         conn
         |> put_status(:bad_request)
-        |> json(%{message: "Failed to register"})
+        |> json(%{message: "Failed to update"})
     end
   end
 
