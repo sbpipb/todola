@@ -3,6 +3,7 @@ defmodule TodoApi.Lists do
   The Lists context.
   """
 
+    #
   import Ecto.Changeset
   import Ecto.Query, warn: false
   alias TodoApi.Repo
@@ -34,12 +35,22 @@ defmodule TodoApi.Lists do
 
   def update_task(task_id, task_params) do
     task = find_task(task_id)
+    changeset = Task.base_changeset(task, task_params)
 
-    changeset = Task.changeset(task, task_params)
+    if changed?(changeset, :order_number) do
+      old_order_number = task.order_number
+      %{"order_number" => order_number } = task_params
+      second_task = Repo.one!(from t in Task, where: t.id == ^order_number)
 
-    case changed?(changeset, :order_number) do
-      true -> update_task_order(task, changeset)
-      false -> Repo.update changeset
+      task = update_task_order(task, changeset)
+
+      second_task
+      |> put_change(:order_number, old_order_number / 1)
+      |> Repo.update
+
+      task
+    else
+      Repo.update changeset
     end
   end
 

@@ -1,6 +1,10 @@
 defmodule TodoApi.Lists.Task do
   use Ecto.Schema
   import Ecto.Changeset
+  alias ElixirLS.LanguageServer.Plugins.Ecto.Query
+  alias TodoApi.Lists.Task
+  alias Ecto.Query
+  alias TodoApi.Repo
 
   schema "tasks" do
     field :completed, :boolean, default: false
@@ -13,14 +17,16 @@ defmodule TodoApi.Lists.Task do
   end
 
   @doc false
-  def changeset(task, attrs) do
+  def base_changeset(task, attrs) do
     task
     |> cast(attrs, [:title, :list_id, :user_id, :completed, :order_number, :move_count])
   end
 
   def create_task_changeset(task, attrs) do
+    latest_task = Task |> Query.last |> Repo.one
     task
-    |> changeset(attrs)
+    |> base_changeset(attrs)
+    |> put_change(:order_number, (latest_task.id + 1) / 1)
     |> validate_required([:title, :completed, :list_id])
   end
 
@@ -34,6 +40,6 @@ defmodule TodoApi.Lists.Task do
         ) :: Ecto.Changeset.t()
   def update_changeset(task, attrs) do
     task
-    |> changeset(attrs)
+    |> base_changeset(attrs)
   end
 end
