@@ -9,7 +9,7 @@ defmodule TodoApi.Repo.Migrations.CreateTasks do
       add :list_id, references(:lists, on_delete: :nothing)
 
       add :order_id, :integer
-      add :move_count, :integer
+      add :move_count, :integer, default: 50
       timestamps()
     end
 
