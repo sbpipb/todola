@@ -30,26 +30,26 @@ defmodule TodoApi.Lists do
 
   def create_task(attrs) do
     %Task{}
-    |> create_task_changeset(attrs)
+    |> Task.create_task_changeset(attrs)
     |> Repo.insert()
   end
 
   def update_task(task_id, task_params) do
-    task_id
-    |> find_task
-    |> Task.changeset(task_params)
+    task = find_task(task_id)
+
+    changeset = Task.changeset(task, task_params)
+
+    case changed?(changeset, :order_number) do
+      true -> update_task_order(task, changeset)
+      false -> Repo.update changeset
+    end
+  end
+
+  defp update_task_order(task, changeset) do
+    changeset
+    |> put_change(:move_count, task.move_count - 1)
+    |> validate_number(:move_count, greater_than: 0)
     |> Repo.update
-  end
-
-  defp find_task(task_id) do
-    Task
-    |> Repo.get!(task_id)
-  end
-
-  def create_task_changeset(task, attrs) do
-    task
-    |> cast(attrs, [:title, :list_id, :user_id])
-    |> validate_required([:title, :list_id, :user_id])
   end
 
   def delete_task(task_id) do
@@ -59,11 +59,19 @@ defmodule TodoApi.Lists do
     end
   end
 
+  defp find_task(task_id) do
+    Task
+    |> Repo.get!(task_id)
+  end
+
   defp serialize_tasks(tasks) do
     tasks
     |> Enum.map(fn t -> %{id: t.id,
                           title: t.title,
                           completed: t.completed,
-                          order_number: t.order_number} end)
+                          order_number: t.order_number,
+                          move_count: t.move_count
+
+                          } end)
   end
 end
